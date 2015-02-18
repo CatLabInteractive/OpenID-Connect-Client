@@ -14,6 +14,20 @@ class LoginController
 
 	public function login ()
 	{
+		// Check for return tag
+		if ($return = $this->request->input ('return')) {
+			$this->request->getSession ()->set ('post-login-redirect', $return);
+		}
+
+		// Check for cancel tag
+		if ($return = $this->request->input ('cancel')) {
+			$this->request->getSession ()->set ('cancel-login-redirect', $return);
+		}
+
+		// Check if already registered
+		if ($user = $this->request->getUser ('accounts'))
+			return $this->module->postLogin ($this->request, $user);
+
 		$config = Config::get ('openid.client');
 		$flow = new Basic (array ('client_info' => $config));
 
