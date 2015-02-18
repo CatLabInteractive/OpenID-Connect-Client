@@ -3,7 +3,7 @@
   "type": "library",
   "description": "OpenID connect module for Neuron network.",
   "keywords": ["framework"],
-  "homepage":"http://github.com/catlabinteractive/neuron",
+  "homepage":"https://github.com/CatLabInteractive/OpenID-Connect-Client",
   "license": "MIT",
 
   "repositories": [
