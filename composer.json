@@ -1,0 +1,35 @@
+{
+  "name": "catlabinteractive/openid-connect-client",
+  "type": "library",
+  "description": "Very light php framework. Should probably not be used.",
+  "keywords": ["framework"],
+  "homepage":"http://github.com/catlabinteractive/neuron",
+  "license": "MIT",
+
+  "repositories": [
+	{
+	  "type": "vcs",
+	  "url": "https://github.com/catlabinteractive/openid-connect-client"
+	}
+  ],
+
+  "require": {
+	"php": ">=5.5.0",
+	"catlabinteractive/neuron": "dev-master",
+	"ivan-novakov/php-openid-connect-client": "dev-master"
+  },
+
+  "authors" : [
+	{
+	  "name": "Thijs Van der Schaeghe",
+	  "email" : "info@catlab.be",
+	  "homepage" : "https://www.catlab.eu/",
+	  "role" : "Developer"
+	}
+  ],
+  "autoload": {
+	"psr-4" : {
+	  "CatLab\\OpenIDClient\\" : "src/CatLab/OpenIDClient"
+	}
+  }
+}
