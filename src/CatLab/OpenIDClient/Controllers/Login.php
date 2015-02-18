@@ -34,6 +34,7 @@ class Login {
 		try {
 			$userInfo = $flow->process();
 
+			echo '<pre>';
 			print_r ($userInfo);
 
 		} catch (\Exception $e) {
