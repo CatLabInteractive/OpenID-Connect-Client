@@ -94,10 +94,13 @@ class LoginController
 
 		$user = $mapper->getFromEmail ($userdetails['email']);
 
+		mail ('thijs@catlab.be', 'userinfo', print_r ($userdetails, true));
+
 		if (!$user) {
 			// Create!
 			$user = new User ();
 			$user->setEmail ($userdetails['email']);
+			$user->setUsername ($userdetails['sub']);
 			$mapper->create ($user);
 		}
 
