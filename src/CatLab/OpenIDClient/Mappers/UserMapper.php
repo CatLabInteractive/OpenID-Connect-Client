@@ -113,6 +113,9 @@ class UserMapper
 		if ($username = $user->getUsername ())
 			$data['u_username'] = $username;
 
+		if ($sub = $user->getSub ())
+			$data['u_sub'] = $user->getSub ();
+
 		return $data;
 	}
 
