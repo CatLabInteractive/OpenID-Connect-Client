@@ -4,11 +4,7 @@
 $router = new \Neuron\Router ();
 
 // Accounts module
-$signinmodule = new \CatLab\Accounts\Module ();
-
-$password = new \CatLab\Accounts\Authenticators\Password ();
-$signinmodule->addAuthenticator ($password);
-$signinmodule->setLayout ('index-account.phpt');
+$signinmodule = new \CatLab\OpenIDClient\Module ();
 
 // Make the module available on /account
 $router->module ('/account', $signinmodule);

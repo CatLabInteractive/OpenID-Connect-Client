@@ -30,11 +30,5 @@ switch ($hostname)
 // Set the template folder
 \Neuron\Core\Template::addPath (__DIR__ . '/../templates/');
 
-// Always set a locale
-$app->setLocale ('nl_BE.utf8');
-
-// Set the local language folder
-\Neuron\Tools\Text::getInstance ()->addPath ('example', __DIR__ . '/../locales/');
-
 // Return app
 return $app;
