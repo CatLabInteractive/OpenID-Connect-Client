@@ -109,7 +109,7 @@ class LoginController
 		$mapper = MapperFactory::getUserMapper ();
 		ExpectedType::check ($mapper, UserMapper::class);
 
-		$user = $mapper->getFromSubject ($userdetails['sub']);
+		$user = $mapper->getFromSubject ($userdetails['id']);
 
 		if (!$user) {
 
@@ -123,7 +123,7 @@ class LoginController
 				$mapper->create ($user);
 			}
 
-			$user->setSub ($userdetails['sub']);
+			$user->setSub ($userdetails['id']);
 		}
 
 		$user->mergeFromInput ($userdetails);
