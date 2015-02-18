@@ -44,6 +44,8 @@ class Module
 		$router->match ('GET|POST', $this->routepath . '/login', '\CatLab\OpenIDClient\Controllers\LoginController@login');
 		$router->match ('GET|POST', $this->routepath . '/login/next', '\CatLab\OpenIDClient\Controllers\LoginController@next');
 
+		$router->get ($this->routepath . '/logout', '\CatLab\OpenIDClient\Controllers\LoginController@logout');
+
 		$router->get ($this->routepath . '/status', '\CatLab\OpenIDClient\Controllers\LoginController@status');
 	}
 
