@@ -10,5 +10,4 @@ return array (
 		'charset' => 'utf8',
 		'prefix' => 'neuron_'
 	)
-
 );
