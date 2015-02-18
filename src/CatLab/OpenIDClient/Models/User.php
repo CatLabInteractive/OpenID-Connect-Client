@@ -27,6 +27,9 @@ class User
 	/** @var string $username */
 	private $username;
 
+	/** @var string $sub */
+	private $sub;
+
 	public function __construct ()
 	{
 
@@ -37,7 +40,7 @@ class User
 	 * @param $details
 	 */
 	public function mergeFromInput ($details) {
-
+		$this->setUsername ($details['sub']);
 	}
 
 	/**
@@ -118,5 +121,21 @@ class User
 	public function setUsername ($username)
 	{
 		$this->username = $username;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSub ()
+	{
+		return $this->sub;
+	}
+
+	/**
+	 * @param string $sub
+	 */
+	public function setSub ($sub)
+	{
+		$this->sub = $sub;
 	}
 }

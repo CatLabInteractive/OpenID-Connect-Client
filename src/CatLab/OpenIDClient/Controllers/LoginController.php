@@ -7,6 +7,7 @@ use CatLab\OpenIDClient\Models\User;
 use InoOicClient\Flow\Basic;
 use Neuron\Config;
 use Neuron\Exceptions\ExpectedType;
+use Neuron\Exceptions\InvalidParameter;
 use Neuron\MapperFactory;
 
 class LoginController
@@ -89,25 +90,47 @@ class LoginController
 
 	private function processLogin ($userdetails)
 	{
+		if (empty ($userdetails['email'])) {
+			throw new InvalidParameter ("Userdetails must contain an email address.");
+		}
+
+		if (!isset ($userdetails['email_verified']) || !$userdetails['email_verified']) {
+			throw new InvalidParameter ("Email adderss must be verified.");
+		}
+
+
+		$user = $this->touchUser ($userdetails);
+		return $this->module->login ($this->request, $user);
+	}
+
+	private function touchUser ($userdetails)
+	{
 		$mapper = MapperFactory::getUserMapper ();
 		ExpectedType::check ($mapper, UserMapper::class);
 
-		$user = $mapper->getFromEmail ($userdetails['email']);
-
-		mail ('thijs@catlab.be', 'userinfo', print_r ($userdetails, true));
+		$user = $mapper->getFromSubject ($userdetails['sub']);
 
 		if (!$user) {
-			// Create!
-			$user = new User ();
-			$user->setEmail ($userdetails['email']);
-			$user->setUsername ($userdetails['sub']);
-			$mapper->create ($user);
+
+			// First check by email
+			$user = $mapper->getFromEmail ($userdetails['email']);
+
+			if (!$user) {
+				// Create!
+				$user = new User ();
+				$user->setEmail ($userdetails['email']);
+				$mapper->create ($user);
+			}
+
+			$user->setSub ($userdetails['sub']);
 		}
 
 		$user->mergeFromInput ($userdetails);
 		$mapper->update ($user);
 
-		return $this->module->login ($this->request, $user);
+
+
+		return $user;
 	}
 
 }

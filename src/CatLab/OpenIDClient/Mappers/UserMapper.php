@@ -70,6 +70,26 @@ class UserMapper
 	}
 
 	/**
+	 * @param $sub
+	 * @return \CatLab\OpenIDClient\Models\User|null
+	 */
+	public function getFromSubject ($sub) {
+		$query = new Query
+		("
+			SELECT
+				*
+			FROM
+				{$this->table_users}
+			WHERE
+				u_sub = ?
+		");
+
+		$query->bindValue (1, $sub);
+
+		return $this->getSingle ($query->execute ());
+	}
+
+	/**
 	 * @param User $user
 	 * @return array
 	 */
