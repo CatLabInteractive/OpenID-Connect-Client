@@ -1,7 +1,7 @@
 {
   "name": "catlabinteractive/openid-connect-client",
   "type": "library",
-  "description": "Very light php framework. Should probably not be used.",
+  "description": "OpenID connect module for Neuron network.",
   "keywords": ["framework"],
   "homepage":"http://github.com/catlabinteractive/neuron",
   "license": "MIT",
