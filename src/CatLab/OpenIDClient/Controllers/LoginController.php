@@ -94,10 +94,11 @@ class LoginController
 			throw new InvalidParameter ("Userdetails must contain an email address.");
 		}
 
-		if (!isset ($userdetails['email_verified']) || !$userdetails['email_verified']) {
-			throw new InvalidParameter ("Email adderss must be verified.");
-		}
+		if (!isset ($userdetails['verified_email']) || !$userdetails['verified_email']) {
 
+			var_dump ($userdetails);
+			throw new InvalidParameter ("Email address must be verified.");
+		}
 
 		$user = $this->touchUser ($userdetails);
 		return $this->module->login ($this->request, $user);
