@@ -40,7 +40,7 @@ class User
 	 * @param $details
 	 */
 	public function mergeFromInput ($details) {
-		$this->setUsername ($details['sub']);
+
 	}
 
 	/**
