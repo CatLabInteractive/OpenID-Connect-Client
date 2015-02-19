@@ -66,6 +66,11 @@ class LoginController
 
 	public function logout ()
 	{
+		$config = Config::get ('openid.client');
+		$flow = new Basic (array ('client_info' => $config));
+
+		session_destroy ();
+
 		/*
 		$template = new Template ('CatLab/Accounts/logout.phpt');
 
