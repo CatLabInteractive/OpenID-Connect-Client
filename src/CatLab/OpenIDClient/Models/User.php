@@ -41,6 +41,9 @@ class User
 	 */
 	public function mergeFromInput ($details) {
 
+		if (isset ($details['username']))
+			$this->setUsername ($details['username']);
+
 	}
 
 	/**
