@@ -8,6 +8,7 @@
 
 namespace CatLab\OpenIDClient\Mappers;
 
+use CatLab\OpenIDClient\Models\Guest;
 use CatLab\OpenIDClient\Models\User;
 use Neuron\DB\Query;
 use Neuron\Exceptions\InvalidParameter;
@@ -33,6 +34,10 @@ class UserMapper
 	 */
 	public function getFromId ($id)
 	{
+		if ($id === -1) {
+			return new Guest ();
+		}
+
 		$query = new Query
 		("
 			SELECT

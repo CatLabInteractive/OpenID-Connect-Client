@@ -12,6 +12,8 @@ class User
 	implements \Neuron\Interfaces\Models\User
 {
 
+	private $accessToken;
+
 	/** @var int $id */
 	private $id;
 
@@ -124,6 +126,22 @@ class User
 	public function setUsername ($username)
 	{
 		$this->username = $username;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAccessToken ()
+	{
+		return $this->accessToken;
+	}
+
+	/**
+	 * @param string $accessToken
+	 */
+	public function setAccessToken ($accessToken)
+	{
+		$this->accessToken = $accessToken;
 	}
 
 	/**

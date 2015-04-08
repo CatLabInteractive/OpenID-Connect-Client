@@ -3,6 +3,7 @@
 namespace CatLab\OpenIDClient;
 
 use CatLab\OpenIDClient\Mappers\UserMapper;
+use CatLab\OpenIDClient\Models\Guest;
 use CatLab\OpenIDClient\Models\User;
 use Neuron\Application;
 use Neuron\Exceptions\DataNotSet;
@@ -130,6 +131,9 @@ class Module
 				$user = MapperFactory::getUserMapper ()->getFromId ($userid);
 				if ($user)
 					return $user;
+			}
+			else {
+				return new Guest ();
 			}
 
 			return null;
