@@ -132,9 +132,6 @@ class Module
 				if ($user)
 					return $user;
 			}
-			else {
-				return new Guest ();
-			}
 
 			return null;
 		});
