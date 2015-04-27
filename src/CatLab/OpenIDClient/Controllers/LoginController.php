@@ -54,10 +54,14 @@ class LoginController
 		$flow = new Basic (array ('client_info' => $config));
 
 		try {
-			$userInfo = $flow->process();
+			//$userInfo = $flow->process();
+
+			$authorizationCode = $flow->getAuthorizationCode();
+			$accessToken = $flow->getAccessToken ($authorizationCode);
+			$userInfo = $flow->getUserInfo($accessToken);
 
 			// Get the user
-			return $this->processLogin ($userInfo);
+			return $this->processLogin ($accessToken, $userInfo);
 
 		} catch (\Exception $e) {
 			printf("Exception during user authentication: [%s] %s", get_class($e), $e->getMessage());
@@ -93,7 +97,7 @@ class LoginController
 		}
 	}
 
-	private function processLogin ($userdetails)
+	private function processLogin ($accessToken, $userdetails)
 	{
 		if (empty ($userdetails['email'])) {
 			throw new InvalidParameter ("Userdetails must contain an email address.");
@@ -101,11 +105,12 @@ class LoginController
 
 		if (!isset ($userdetails['verified_email']) || !$userdetails['verified_email']) {
 
-			var_dump ($userdetails);
 			throw new InvalidParameter ("Email address must be verified.");
 		}
 
 		$user = $this->touchUser ($userdetails);
+		$user->setAccessToken ($accessToken);
+
 		return $this->module->login ($this->request, $user);
 	}
 

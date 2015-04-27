@@ -73,6 +73,8 @@ class Module
 	public function login (Request $request, User $user)
 	{
 		$request->getSession ()->set ('catlab-user-id', $user->getId ());
+		$request->getSession ()->set ('catlab-openid-access-token', $user->getAccessToken ());
+
 		$this->trigger ('user:login', $user);
 
 		return $this->postLogin ($request, $user);
@@ -87,6 +89,8 @@ class Module
 	public function logout (Request $request)
 	{
 		$request->getSession ()->set ('catlab-user-id', null);
+		$request->getSession ()->set ('catlab-openid-access-token', null);
+
 		$this->trigger ('user:logout');
 
 		return $this->postLogout ($request);
@@ -135,8 +139,9 @@ class Module
 			if ($userid)
 			{
 				$user = MapperFactory::getUserMapper ()->getFromId ($userid);
-				if ($user)
+				if ($user) {
 					return $user;
+				}
 			}
 
 			return null;
