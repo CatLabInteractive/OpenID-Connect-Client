@@ -2,10 +2,12 @@
 
 namespace CatLab\OpenIDClient;
 
+use CatLab\OpenIDClient\Helpers\LoginForm;
 use CatLab\OpenIDClient\Mappers\UserMapper;
 use CatLab\OpenIDClient\Models\Guest;
 use CatLab\OpenIDClient\Models\User;
 use Neuron\Application;
+use Neuron\Core\Template;
 use Neuron\Exceptions\DataNotSet;
 use Neuron\Exceptions\ExpectedType;
 use Neuron\MapperFactory;
@@ -30,11 +32,25 @@ class Module
 	{
 		$this->routepath = $routepath;
 
+		Template::addPath (__DIR__ . '/templates/', 'CatLab/OpenIDClient/');
+
 		// Set session variable
 		Application::getInstance ()->on ('dispatch:before', array ($this, 'setRequestUser'));
 
 		// Set the global user mapper, unless one is set already
 		Application::getInstance ()->on ('dispatch:first', array ($this, 'setUserMapper'));
+
+		// Add helper methods
+		$helper = new LoginForm ($this);
+		Template::addHelper ('CatLab.OpenIDClient.LoginForm', $helper);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRoutePath ()
+	{
+		return $this->routepath;
 	}
 
 	/**
