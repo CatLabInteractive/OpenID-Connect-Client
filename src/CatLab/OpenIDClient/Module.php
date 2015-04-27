@@ -9,12 +9,14 @@ use Neuron\Application;
 use Neuron\Exceptions\DataNotSet;
 use Neuron\Exceptions\ExpectedType;
 use Neuron\MapperFactory;
+use Neuron\Models\Observable;
 use Neuron\Net\Request;
 use Neuron\Net\Response;
 use Neuron\Router;
 use Neuron\URLBuilder;
 
 class Module
+	extends Observable
 	implements \Neuron\Interfaces\Module {
 
 	private $routepath;
@@ -71,6 +73,8 @@ class Module
 	public function login (Request $request, User $user)
 	{
 		$request->getSession ()->set ('catlab-user-id', $user->getId ());
+		$this->trigger ('user:login', $user);
+
 		return $this->postLogin ($request, $user);
 	}
 
@@ -83,6 +87,8 @@ class Module
 	public function logout (Request $request)
 	{
 		$request->getSession ()->set ('catlab-user-id', null);
+		$this->trigger ('user:logout');
+
 		return $this->postLogout ($request);
 	}
 
