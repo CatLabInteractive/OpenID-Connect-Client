@@ -139,6 +139,7 @@ class Module
 			if ($userid)
 			{
 				$user = MapperFactory::getUserMapper ()->getFromId ($userid);
+				ExpectedType::check ($user, User::class);
 
 				if ($user) {
 
