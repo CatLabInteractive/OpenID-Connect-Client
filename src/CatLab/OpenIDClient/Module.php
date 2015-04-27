@@ -139,7 +139,12 @@ class Module
 			if ($userid)
 			{
 				$user = MapperFactory::getUserMapper ()->getFromId ($userid);
+
 				if ($user) {
+
+					if ($accessToken = $request->getSession ()->get ('catlab-openid-access-token')) {
+						$user->setAccessToken ($accessToken);
+					}
 					return $user;
 				}
 			}
