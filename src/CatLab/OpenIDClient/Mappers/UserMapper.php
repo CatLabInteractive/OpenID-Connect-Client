@@ -121,6 +121,9 @@ class UserMapper
 		if ($sub = $user->getSub ())
 			$data['u_sub'] = $user->getSub ();
 
+		if ($accessToken = $user->getAccessToken ())
+			$data['u_last_access_token'] = $accessToken;
+
 		return $data;
 	}
 
@@ -177,6 +180,9 @@ class UserMapper
 
 		if ($data['u_username'])
 			$user->setUsername ($data['u_username']);
+
+		if ($data['u_last_access_token'])
+			$user->setAccessToken ($data['u_last_access_token']);
 
 		return $user;
 	}
