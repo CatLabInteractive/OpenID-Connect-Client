@@ -108,13 +108,12 @@ class LoginController
 			throw new InvalidParameter ("Email address must be verified.");
 		}
 
-		$user = $this->touchUser ($userdetails);
-		$user->setAccessToken ($accessToken);
+		$user = $this->touchUser ($accessToken, $userdetails);
 
 		return $this->module->login ($this->request, $user);
 	}
 
-	private function touchUser ($userdetails)
+	private function touchUser ($accessToken, $userdetails)
 	{
 		$mapper = MapperFactory::getUserMapper ();
 		ExpectedType::check ($mapper, UserMapper::class);
@@ -137,6 +136,8 @@ class LoginController
 		}
 
 		$user->mergeFromInput ($userdetails);
+		$user->setAccessToken ($accessToken);
+
 		$mapper->update ($user);
 
 
