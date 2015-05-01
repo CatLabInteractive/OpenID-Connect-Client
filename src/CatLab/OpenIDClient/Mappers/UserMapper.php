@@ -157,7 +157,7 @@ class UserMapper
 		Query::update ($this->table_users, $data, array ('u_id' => $user->getId ()))->execute ();
 	}
 
-	protected function getModelInstance ()
+	public function getModelInstance ()
 	{
 		return new User ();
 	}

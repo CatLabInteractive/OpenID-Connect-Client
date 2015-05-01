@@ -127,12 +127,14 @@ class LoginController
 
 			if (!$user) {
 				// Create!
-				$user = new User ();
+				$user = $mapper->getModelInstance ();
 				$user->setEmail ($userdetails['email']);
 				$mapper->create ($user);
 			}
 
 			$user->setSub ($userdetails['id']);
+
+
 		}
 
 		$user->mergeFromInput ($userdetails);
