@@ -8,6 +8,7 @@
 
 namespace CatLab\OpenIDClient\Mappers;
 
+use CatLab\OpenIDClient\Collections\UserCollection;
 use CatLab\OpenIDClient\Models\Guest;
 use CatLab\OpenIDClient\Models\User;
 use Neuron\DB\Query;
@@ -160,6 +161,15 @@ class UserMapper
 	public function getModelInstance ()
 	{
 		return new User ();
+	}
+
+	/**
+	 * Override this to set an alternative object collection.
+	 * @return array
+	 */
+	protected function getObjectCollection ()
+	{
+		return new UserCollection ();
 	}
 
 	/**
