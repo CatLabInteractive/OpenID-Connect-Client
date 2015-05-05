@@ -10,9 +10,10 @@ namespace CatLab\OpenIDClient\Collections;
 
 
 use Neuron\Collections\Collection;
+use Neuron\Collections\ModelCollection;
 
 class UserCollection
-	extends Collection {
+	extends ModelCollection {
 
 
 
