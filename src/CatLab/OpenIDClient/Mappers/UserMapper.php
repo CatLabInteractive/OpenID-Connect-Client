@@ -105,25 +105,23 @@ class UserMapper
 		$data = array ();
 
 		// Email
-		if ($email = $user->getEmail ())
-			$data['u_email'] = $email;
+        $data['u_email'] = $user->getEmail();
 
 		// Password
-		if ($password = $user->getPassword ())
-			$data['u_password'] = password_hash ($password, PASSWORD_DEFAULT);
-
-		else if ($hash = $user->getPasswordHash ())
-			$data['u_password'] = $hash;
+		if ($password = $user->getPassword ()) {
+            $data['u_password'] = password_hash($password, PASSWORD_DEFAULT);
+        } else if ($hash = $user->getPasswordHash ()) {
+            $data['u_password'] = $hash;
+        }
 
 		// Username
-		if ($username = $user->getUsername ())
-			$data['u_username'] = $username;
+        $data['u_username'] = $user->getUsername ();
 
-		if ($sub = $user->getSub ())
-			$data['u_sub'] = $user->getSub ();
+		$data['u_sub'] = $user->getSub ();
 
-		if ($accessToken = $user->getAccessToken ())
-			$data['u_last_access_token'] = $accessToken;
+		if ($accessToken = $user->getAccessToken ()) {
+            $data['u_last_access_token'] = $accessToken;
+        }
 
 		return $data;
 	}
