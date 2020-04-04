@@ -180,17 +180,25 @@ class UserMapper
 
 		$user->setId (intval ($data['u_id']));
 
-		if ($data['u_email'])
-			$user->setEmail ($data['u_email']);
+		if ($data['u_email']) {
+            $user->setEmail($data['u_email']);
+        }
 
-		if ($data['u_password'])
-			$user->setPasswordHash ($data['u_password']);
+		if ($data['u_password']) {
+            $user->setPasswordHash($data['u_password']);
+        }
 
-		if ($data['u_username'])
-			$user->setUsername ($data['u_username']);
+		if ($data['u_username']) {
+            $user->setUsername($data['u_username']);
+        }
 
-		if ($data['u_last_access_token'])
-			$user->setAccessToken ($data['u_last_access_token']);
+		if ($data['u_last_access_token']) {
+            $user->setAccessToken($data['u_last_access_token']);
+        }
+
+		if ($data['u_sub']) {
+		    $user->setSub($data['u_sub']);
+        }
 
 		return $user;
 	}
