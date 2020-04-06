@@ -126,6 +126,7 @@ class LoginController
             case 0:
                 $response = Response::redirect($redirectUrl);
                 $response->setCookies([ 'cookiegate' => '1' ]);
+                $response->setStatus(302);
                 return $response;
 
             // oh no, the cookie wasn't set! We need to show an html page :(
