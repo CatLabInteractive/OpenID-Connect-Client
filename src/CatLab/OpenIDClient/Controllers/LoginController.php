@@ -9,12 +9,18 @@ use Neuron\Config;
 use Neuron\Exceptions\ExpectedType;
 use Neuron\Exceptions\InvalidParameter;
 use Neuron\MapperFactory;
+use Neuron\Net\Response;
 
 class LoginController
 	extends BaseController {
 
 	public function login ()
 	{
+        $cookieGate = $this->cookieGate('Login');
+	    if ($cookieGate !== true) {
+	        return $cookieGate;
+        }
+
 		// Check for return tag
 		if ($return = $this->request->input ('return')) {
 			$this->request->getSession ()->set ('post-login-redirect', $return);
@@ -96,6 +102,62 @@ class LoginController
 			echo 'logged out!';
 		}
 	}
+
+    /**
+     * Trigger a series of redirects to make sure we are able to set cookies.
+     */
+	protected function cookieGate($message)
+    {
+        $cookies = $this->request->getCookies();
+
+        // we have a cookie!
+        if (isset($cookies['cookiegate'])) {
+            return true;
+        }
+
+        $input = $_GET;
+        $cookiegate = isset($input['cookiegate']) ? $input['cookiegate'] : 0;
+
+        $input['cookiegate'] = $cookiegate + 1;
+        $redirectUrl = $this->request->getUrl() . '?' . http_build_query($input);
+
+        switch ($cookiegate) {
+            // first step, set cookie and do automatic redirect.
+            case 0:
+                $response = Response::redirect($redirectUrl);
+                $response->setCookies([ 'cookiegate' => '1' ]);
+                return $response;
+
+            // oh no, the cookie wasn't set! We need to show an html page :(
+            case 1:
+                $response = Response::template('CatLab/OpenIDClient/cookiegate/clickNext.phpt', [
+                    'redirectUrl' => $redirectUrl,
+                    'layout' => $this->module->getLayout (),
+                    'tryJavascript' => true
+                ]);
+                $response->setCookies([ 'cookiegate' => '1' ]);
+                return $response;
+
+            // oh no, the cookie wasn't set! We need to show an html page :(
+            case 2:
+                $response = Response::template('CatLab/OpenIDClient/cookiegate/clickNext.phpt', [
+                    'redirectUrl' => $redirectUrl,
+                    'layout' => $this->module->getLayout (),
+                    'tryJavascript' => false
+                ]);
+                $response->setCookies([ 'cookiegate' => '1' ]);
+                return $response;
+
+            // it didn't work. show an error page.
+            case 3:
+            default:
+                return Response::template(
+                    'CatLab/OpenIDClient/cookiegate/cookieError.phpt', [
+                        'layout' => $this->module->getLayout ()
+                    ]
+                );
+        }
+    }
 
 	private function processLogin ($accessToken, $userdetails)
 	{

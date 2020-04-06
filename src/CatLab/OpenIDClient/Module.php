@@ -23,6 +23,9 @@ class Module
 
 	private $routepath;
 
+    /** @var string $layout */
+    private $layout = 'index.phpt';
+
 	/**
 	 * Set template paths, config vars, etc
 	 * @param string $routepath The prefix that should be added to all route paths.
@@ -169,4 +172,21 @@ class Module
 			return null;
 		});
 	}
+
+    /**
+     * Set a layout that will be used for all pages
+     * @param string $layout
+     */
+    public function setLayout ($layout)
+    {
+        $this->layout = $layout;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLayout ()
+    {
+        return $this->layout;
+    }
 }
