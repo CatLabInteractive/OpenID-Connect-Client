@@ -121,11 +121,14 @@ class LoginController
         $input['cookiegate'] = $cookiegate + 1;
         $redirectUrl = $this->request->getUrl() . '?' . http_build_query($input);
 
+        $cookieSniffer = \CatLab\SameSiteCookieSniffer\Sniffer::instance();
+
         switch ($cookiegate) {
             // first step, set cookie and do automatic redirect.
             case 0:
                 $response = Response::redirect($redirectUrl);
-                $response->setCookies([ 'cookiegate' => '1' ]);
+                //$response->setCookies([ 'cookiegate' => '1' ]);
+                setcookie('cookiegate', 1, $cookieSniffer->getCookieParameters());
                 $response->setStatus(302);
                 return $response;
 
@@ -136,7 +139,7 @@ class LoginController
                     'layout' => $this->module->getLayout (),
                     'tryJavascript' => true
                 ]);
-                $response->setCookies([ 'cookiegate' => '1' ]);
+                setcookie('cookiegate', 1, $cookieSniffer->getCookieParameters());
                 return $response;
 
             // oh no, the cookie wasn't set! We need to show an html page :(
@@ -146,7 +149,7 @@ class LoginController
                     'layout' => $this->module->getLayout (),
                     'tryJavascript' => false
                 ]);
-                $response->setCookies([ 'cookiegate' => '1' ]);
+                setcookie('cookiegate', 1, $cookieSniffer->getCookieParameters());
                 return $response;
 
             // it didn't work. show an error page.
