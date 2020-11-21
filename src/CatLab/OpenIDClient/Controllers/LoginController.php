@@ -12,101 +12,116 @@ use Neuron\MapperFactory;
 use Neuron\Net\Response;
 
 class LoginController
-	extends BaseController {
+    extends BaseController
+{
 
-	public function login ()
-	{
+    /**
+     * These parameters are passed on to the controller.
+     * @var string[]
+     */
+    protected $trackingQueryParameters = [
+        'referer',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_term',
+        'utm_content'
+    ];
+
+    public function login()
+    {
         $cookieGate = $this->cookieGate('Login');
-	    if ($cookieGate !== true) {
-	        return $cookieGate;
+        if ($cookieGate !== true) {
+            return $cookieGate;
         }
 
-		// Check for return tag
-		if ($return = $this->request->input ('return')) {
-			$this->request->getSession ()->set ('post-login-redirect', $return);
-		}
+        // Check for return tag
+        if ($return = $this->request->input('return')) {
+            $this->request->getSession()->set('post-login-redirect', $return);
+        }
 
-		// Check for cancel tag
-		if ($return = $this->request->input ('cancel')) {
-			$this->request->getSession ()->set ('cancel-login-redirect', $return);
-		}
+        // Check for cancel tag
+        if ($return = $this->request->input('cancel')) {
+            $this->request->getSession()->set('cancel-login-redirect', $return);
+        }
 
-		// Check if already registered
-		if ($user = $this->request->getUser ('accounts'))
-			return $this->module->postLogin ($this->request, $user);
+        // Check if already registered
+        if ($user = $this->request->getUser('accounts'))
+            return $this->module->postLogin($this->request, $user);
 
-		$config = Config::get ('openid.client');
-		$flow = new Basic (array ('client_info' => $config));
+        $config = Config::get('openid.client');
+        $flow = new Basic (array('client_info' => $config));
 
-		$params = Config::get ('openid.client.scope');
+        $params = Config::get('openid.client.scope');
 
-		if (! isset($_GET['redirect'])) {
-			try {
-				$uri = $flow->getAuthorizationRequestUri ($params);
-				header ('Location: ' . $uri);
+        if (!isset($_GET['redirect'])) {
+            try {
+                $uri = $flow->getAuthorizationRequestUri($params);
+                $uri .= $this->getTrackingParameterString();
 
-				printf("<a href=\"%s\">Login</a>", $uri);
+                header('Location: ' . $uri);
 
-			} catch (\Exception $e) {
-				printf("Exception during authorization URI creation: [%s] %s", get_class($e), $e->getMessage());
-			}
-		}
+                printf("<a href=\"%s\">Login</a>", $uri);
 
-	}
+            } catch (\Exception $e) {
+                printf("Exception during authorization URI creation: [%s] %s", get_class($e), $e->getMessage());
+            }
+        }
 
-	public function next ()
-	{
-		$config = Config::get ('openid.client');
-		$flow = new Basic (array ('client_info' => $config));
+    }
 
-		try {
-			//$userInfo = $flow->process();
+    public function next()
+    {
+        $config = Config::get('openid.client');
+        $flow = new Basic (array('client_info' => $config));
 
-			$authorizationCode = $flow->getAuthorizationCode();
-			$accessToken = $flow->getAccessToken ($authorizationCode);
-			$userInfo = $flow->getUserInfo($accessToken);
+        try {
+            //$userInfo = $flow->process();
 
-			// Get the user
-			return $this->processLogin ($accessToken, $userInfo);
+            $authorizationCode = $flow->getAuthorizationCode();
+            $accessToken = $flow->getAccessToken($authorizationCode);
+            $userInfo = $flow->getUserInfo($accessToken);
 
-		} catch (\Exception $e) {
-			printf("Exception during user authentication: [%s] %s", get_class($e), $e->getMessage());
-		}
-	}
+            // Get the user
+            return $this->processLogin($accessToken, $userInfo);
 
-	public function logout ()
-	{
-		$config = Config::get ('openid.client');
-		$flow = new Basic (array ('client_info' => $config));
+        } catch (\Exception $e) {
+            printf("Exception during user authentication: [%s] %s", get_class($e), $e->getMessage());
+        }
+    }
 
-		session_destroy ();
+    public function logout()
+    {
+        $config = Config::get('openid.client');
+        $flow = new Basic (array('client_info' => $config));
 
-		/*
-		$template = new Template ('CatLab/Accounts/logout.phpt');
+        session_destroy();
 
-		$template->set ('layout', $this->module->getLayout ());
-		$template->set ('action', URLBuilder::getURL ($this->module->getRoutePath () . '/login'));
+        /*
+        $template = new Template ('CatLab/Accounts/logout.phpt');
 
-		return Response::template ($template);
-		*/
+        $template->set ('layout', $this->module->getLayout ());
+        $template->set ('action', URLBuilder::getURL ($this->module->getRoutePath () . '/login'));
 
-		return $this->module->logout ($this->request);
-	}
+        return Response::template ($template);
+        */
 
-	public function status ()
-	{
-		if ($this->request->getUser ()) {
-			echo 'logged in!';
-		}
-		else {
-			echo 'logged out!';
-		}
-	}
+        return $this->module->logout($this->request);
+    }
+
+    public function status()
+    {
+        if ($this->request->getUser()) {
+            echo 'logged in!';
+        } else {
+            echo 'logged out!';
+        }
+    }
 
     /**
      * Trigger a series of redirects to make sure we are able to set cookies.
      */
-	protected function cookieGate($message)
+    protected function cookieGate($message)
     {
         $cookies = $this->request->getCookies();
 
@@ -136,7 +151,7 @@ class LoginController
             case 1:
                 $response = Response::template('CatLab/OpenIDClient/cookiegate/clickNext.phpt', [
                     'redirectUrl' => $redirectUrl,
-                    'layout' => $this->module->getLayout (),
+                    'layout' => $this->module->getLayout(),
                     'tryJavascript' => true
                 ]);
                 setcookie('cookiegate', 1, $cookieSniffer->getCookieParameters());
@@ -146,7 +161,7 @@ class LoginController
             case 2:
                 $response = Response::template('CatLab/OpenIDClient/cookiegate/clickNext.phpt', [
                     'redirectUrl' => $redirectUrl,
-                    'layout' => $this->module->getLayout (),
+                    'layout' => $this->module->getLayout(),
                     'tryJavascript' => false
                 ]);
                 setcookie('cookiegate', 1, $cookieSniffer->getCookieParameters());
@@ -157,60 +172,77 @@ class LoginController
             default:
                 return Response::template(
                     'CatLab/OpenIDClient/cookiegate/cookieError.phpt', [
-                        'layout' => $this->module->getLayout ()
+                        'layout' => $this->module->getLayout()
                     ]
                 );
         }
     }
 
-	private function processLogin ($accessToken, $userdetails)
-	{
-		if (empty ($userdetails['email'])) {
-			throw new InvalidParameter ("Userdetails must contain an email address.");
-		}
+    private function processLogin($accessToken, $userdetails)
+    {
+        if (empty ($userdetails['email'])) {
+            throw new InvalidParameter ("Userdetails must contain an email address.");
+        }
 
-		if (!isset ($userdetails['verified_email']) || !$userdetails['verified_email']) {
+        if (!isset ($userdetails['verified_email']) || !$userdetails['verified_email']) {
 
-			throw new InvalidParameter ("Email address must be verified.");
-		}
+            throw new InvalidParameter ("Email address must be verified.");
+        }
 
-		$user = $this->touchUser ($accessToken, $userdetails);
+        $user = $this->touchUser($accessToken, $userdetails);
 
-		return $this->module->login ($this->request, $user);
-	}
+        return $this->module->login($this->request, $user);
+    }
 
-	private function touchUser ($accessToken, $userdetails)
-	{
-		$mapper = MapperFactory::getUserMapper ();
-		ExpectedType::check ($mapper, UserMapper::class);
+    private function touchUser($accessToken, $userdetails)
+    {
+        $mapper = MapperFactory::getUserMapper();
+        ExpectedType::check($mapper, UserMapper::class);
 
-		$user = $mapper->getFromSubject ($userdetails['id']);
+        $user = $mapper->getFromSubject($userdetails['id']);
 
-		if (!$user) {
+        if (!$user) {
 
-			// First check by email
-			$user = $mapper->getFromEmail ($userdetails['email']);
+            // First check by email
+            $user = $mapper->getFromEmail($userdetails['email']);
 
-			if (!$user) {
-				// Create!
-				$user = $mapper->getModelInstance ();
-				$user->setEmail ($userdetails['email']);
-				$mapper->create ($user);
-			}
+            if (!$user) {
+                // Create!
+                $user = $mapper->getModelInstance();
+                $user->setEmail($userdetails['email']);
+                $mapper->create($user);
+            }
 
-			$user->setSub ($userdetails['id']);
-
-
-		}
-
-		$user->mergeFromInput ($userdetails);
-		$user->setAccessToken ($accessToken);
-
-		$mapper->update ($user);
+            $user->setSub($userdetails['id']);
 
 
+        }
 
-		return $user;
-	}
+        $user->mergeFromInput($userdetails);
+        $user->setAccessToken($accessToken);
+
+        $mapper->update($user);
+
+
+        return $user;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTrackingParameterString()
+    {
+        $out = [];
+        foreach ($this->trackingQueryParameters as $v) {
+            if ($this->request->input($v)) {
+                $out[$v] = $this->request->input($v);
+            }
+        }
+        if (count($out) === 0) {
+            return '';
+        }
+
+        return '&' . http_build_query($out);
+    }
 
 }
