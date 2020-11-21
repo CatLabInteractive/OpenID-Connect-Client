@@ -20,7 +20,7 @@ class LoginController
      * @var string[]
      */
     protected $trackingQueryParameters = [
-        'referer',
+        'utm_referrer',
         'utm_source',
         'utm_medium',
         'utm_campaign',
