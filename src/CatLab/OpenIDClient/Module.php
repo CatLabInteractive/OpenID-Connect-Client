@@ -26,6 +26,12 @@ class Module
     /** @var string $layout */
     private $layout = 'index.phpt';
 
+    /**
+     * Probably a bad idea.
+     * @var bool
+     */
+    private $sendSessionIdAuthCallback = false;
+
 	/**
 	 * Set template paths, config vars, etc
 	 * @param string $routepath The prefix that should be added to all route paths.
@@ -188,5 +194,21 @@ class Module
     public function getLayout ()
     {
         return $this->layout;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSendSessionIdAuthCallback()
+    {
+        return $this->sendSessionIdAuthCallback;
+    }
+
+    /**
+     * @param bool $sendSessionIdAuthCallback
+     */
+    public function setSendSessionIdAuthCallback($sendSessionIdAuthCallback)
+    {
+        $this->sendSessionIdAuthCallback = $sendSessionIdAuthCallback;
     }
 }

@@ -5,6 +5,7 @@ namespace CatLab\OpenIDClient\Controllers;
 use CatLab\OpenIDClient\Mappers\UserMapper;
 use CatLab\OpenIDClient\Models\User;
 use InoOicClient\Flow\Basic;
+use Neuron\Application;
 use Neuron\Config;
 use Neuron\Exceptions\ExpectedType;
 use Neuron\Exceptions\InvalidParameter;
@@ -59,15 +60,30 @@ class LoginController
                 $uri = $flow->getAuthorizationRequestUri($params);
                 $uri .= $this->getTrackingParameterString();
 
-                header('Location: ' . $uri);
+                if ($this->module->isSendSessionIdAuthCallback()) {
+                    $uri .= '&' . $this->request->getSession()->getSessionQueryString();
+                }
 
-                printf("<a href=\"%s\">Login</a>", $uri);
+                return $this->redirectToAuthorization($uri);
 
             } catch (\Exception $e) {
                 printf("Exception during authorization URI creation: [%s] %s", get_class($e), $e->getMessage());
             }
         }
 
+    }
+
+    /**
+     * @param $uri
+     * @return Response
+     */
+    protected function redirectToAuthorization($uri)
+    {
+        return Response::template('CatLab/OpenIDClient/redirect.phpt', [
+            'redirectUrl' => $uri,
+            'layout' => $this->module->getLayout(),
+            'tryJavascript' => true
+        ]);
     }
 
     public function next()
