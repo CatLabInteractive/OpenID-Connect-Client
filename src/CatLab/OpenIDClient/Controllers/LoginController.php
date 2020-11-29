@@ -79,11 +79,14 @@ class LoginController
      */
     protected function redirectToAuthorization($uri)
     {
+        return Response::redirect($uri);
+        /*
         return Response::template('CatLab/OpenIDClient/redirect.phpt', [
             'redirectUrl' => $uri,
             'layout' => $this->module->getLayout(),
             'tryJavascript' => true
         ]);
+        */
     }
 
     public function next()
