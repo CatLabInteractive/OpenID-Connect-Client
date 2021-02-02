@@ -1,16 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daedeloth
- * Date: 30/11/14
- * Time: 15:23
- */
 
 namespace CatLab\OpenIDClient\Models;
 
-class User
-	implements \Neuron\Interfaces\Models\User
+use CatLab\OpenIDClient\Mappers\UserMapper;
+use Neuron\Config;
+use Neuron\MapperFactory;
+use Neuron\Net\Client;
+use Neuron\Net\Request;
+
+/**
+ * Class User
+ * @package CatLab\OpenIDClient\Models
+ */
+class User implements \Neuron\Interfaces\Models\User
 {
+    public $pingInterval = 3600; // every hour.
 
 	private $accessToken;
 
@@ -32,6 +36,24 @@ class User
 	/** @var string $sub */
 	private $sub;
 
+    /**
+     * @var \DateTime
+     */
+	private $createdAt;
+
+    /**
+     * @var \DateTime
+     */
+	private $updatedAt;
+
+    /**
+     * @var \DateTime
+     */
+	private $lastPing;
+
+    /**
+     * User constructor.
+     */
 	public function __construct ()
 	{
 
@@ -159,4 +181,109 @@ class User
 	{
 		$this->sub = $sub;
 	}
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \DateTime $updatedAt
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastPing()
+    {
+        return $this->lastPing;
+    }
+
+    /**
+     * @param \DateTime $lastPing
+     */
+    public function setLastPing($lastPing)
+    {
+        $this->lastPing = $lastPing;
+    }
+
+    /**
+     * Remove any data that might be considered personal.
+     */
+    public function anonymize()
+    {
+        $this->setEmail(null);
+        $this->setUsername(null);
+
+        \Neuron\MapperFactory::getUserMapper()->update($this);
+    }
+
+    /**
+     * Should we send a ping message back to the authentication server?
+     * @return bool
+     */
+    public function shouldPing()
+    {
+        if (
+            $this->getLastPing() === null ||
+            $this->getLastPing()->getTimestamp() < (time() - $this->pingInterval)
+        ) {
+            $this->setLastPing(new \DateTime());
+
+            /** @var UserMapper $mapper */
+            $mapper = MapperFactory::getUserMapper();
+            $mapper->updateLastPing($this);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function ping()
+    {
+        $pingEndpoint = Config::get('openid.client.ping_endpoint');
+        if (!$pingEndpoint) {
+            return null;
+        }
+
+        if (!$this->shouldPing()) {
+            return null;
+        }
+
+        $req = new Request ();
+        $req->setUrl($pingEndpoint);
+        $req->setParameters(array(
+            'access_token' => $this->getAccessToken()
+        ));
+
+        $response = Client::getInstance()->post($req);
+        $data = $response->getData();
+    }
 }

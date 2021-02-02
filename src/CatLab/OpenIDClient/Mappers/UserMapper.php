@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daedeloth
- * Date: 30/11/14
- * Time: 15:20
- */
 
 namespace CatLab\OpenIDClient\Mappers;
 
@@ -15,6 +9,10 @@ use Neuron\DB\Query;
 use Neuron\Exceptions\InvalidParameter;
 use Neuron\Mappers\BaseMapper;
 
+/**
+ * Class UserMapper
+ * @package CatLab\OpenIDClient\Mappers
+ */
 class UserMapper
 	extends BaseMapper
 	implements \CatLab\OpenIDClient\Interfaces\UserMapper
@@ -123,6 +121,11 @@ class UserMapper
             $data['u_last_access_token'] = $accessToken;
         }
 
+		if ($user->getLastPing()) {
+		    $data['last_ping_at'] = [ $user->getLastPing(), Query::PARAM_DATE ];
+        }
+
+		$data['updated_at'] = [ new \DateTime(), Query::PARAM_DATE ];
 		return $data;
 	}
 
@@ -139,6 +142,8 @@ class UserMapper
 
 		$data = $this->prepareFields ($user);
 
+        $data['created_at'] = [ new \DateTime(), Query::PARAM_DATE ];
+
 		// Insert
 		$id = Query::insert ($this->table_users, $data)->execute ();
 		$user->setId ($id);
@@ -154,9 +159,24 @@ class UserMapper
 	{
 		$data = $this->prepareFields ($user);
 		Query::update ($this->table_users, $data, array ('u_id' => $user->getId ()))->execute ();
+
+		return $user;
 	}
 
-	public function getModelInstance ()
+    /**
+     * @param User $user
+     * @return User
+     */
+    public function updateLastPing(User $user)
+    {
+        $data = [
+            'last_ping_at' => [ $user->getLastPing(), Query::PARAM_DATE ]
+        ];
+        Query::update ($this->table_users, $data, array ('u_id' => $user->getId ()))->execute ();
+        return $user;
+    }
+
+    public function getModelInstance ()
 	{
 		return new User ();
 	}
@@ -198,6 +218,18 @@ class UserMapper
 
 		if ($data['u_sub']) {
 		    $user->setSub($data['u_sub']);
+        }
+
+		if ($data['created_at']) {
+		    $user->setCreatedAt(new \DateTime($data['created_at']));
+        }
+
+        if ($data['updated_at']) {
+            $user->setCreatedAt(new \DateTime($data['updated_at']));
+        }
+
+        if ($data['last_ping_at']) {
+            $user->setLastPing(new \DateTime($data['last_ping_at']));
         }
 
 		return $user;

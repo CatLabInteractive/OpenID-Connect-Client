@@ -4,7 +4,6 @@ namespace CatLab\OpenIDClient;
 
 use CatLab\OpenIDClient\Helpers\LoginForm;
 use CatLab\OpenIDClient\Mappers\UserMapper;
-use CatLab\OpenIDClient\Models\Guest;
 use CatLab\OpenIDClient\Models\User;
 use Neuron\Application;
 use Neuron\Core\Template;
@@ -17,6 +16,10 @@ use Neuron\Net\Response;
 use Neuron\Router;
 use Neuron\URLBuilder;
 
+/**
+ * Class Module
+ * @package CatLab\OpenIDClient
+ */
 class Module
 	extends Observable
 	implements \Neuron\Interfaces\Module {
@@ -77,6 +80,10 @@ class Module
 		$router->get ($this->routepath . '/status', '\CatLab\OpenIDClient\Controllers\LoginController@status');
 	}
 
+    /**
+     * @throws ExpectedType
+     * @throws \Neuron\Exceptions\InvalidParameter
+     */
 	public function setUserMapper ()
 	{
 		try {
@@ -89,12 +96,13 @@ class Module
 		}
 	}
 
-	/**
-	 * Login a specific user
-	 * @param Request $request
-	 * @param User $user
-	 * @return \Neuron\Net\Response
-	 */
+    /**
+     * Login a specific user
+     * @param Request $request
+     * @param User $user
+     * @return \Neuron\Net\Response
+     * @throws DataNotSet
+     */
 	public function login (Request $request, User $user)
 	{
 		$request->getSession ()->set ('catlab-user-id', $user->getId ());
@@ -121,13 +129,14 @@ class Module
 		return $this->postLogout ($request);
 	}
 
-	/**
-	 * Called right after a user is logged in.
-	 * Should be a redirect.
-	 * @param Request $request
-	 * @param \Neuron\Interfaces\Models\User $user
-	 * @return \Neuron\Net\Response
-	 */
+    /**
+     * Called right after a user is logged in.
+     * Should be a redirect.
+     * @param Request $request
+     * @param \Neuron\Interfaces\Models\User $user
+     * @return \Neuron\Net\Response
+     * @throws DataNotSet
+     */
 	public function postLogin (Request $request, \Neuron\Interfaces\Models\User $user)
 	{
 		if ($redirect = $request->getSession ()->get ('post-login-redirect'))
@@ -151,10 +160,11 @@ class Module
 		return Response::redirect (URLBuilder::getURL ('/'));
 	}
 
-	/**
-	 * Set user from session
-	 * @param Request $request
-	 */
+    /**
+     * Set user from session
+     * @param Request $request
+     * @throws \Neuron\Exceptions\InvalidParameter
+     */
 	public function setRequestUser (Request $request)
 	{
 		$request->addUserCallback ('accounts', function (Request $request) {
