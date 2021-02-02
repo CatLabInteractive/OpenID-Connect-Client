@@ -17,7 +17,7 @@ class Guest
 		return null;
 	}
 
-	public function getUsername () {
+	public function getDisplayName () {
 		return 'Guest';
 	}
 

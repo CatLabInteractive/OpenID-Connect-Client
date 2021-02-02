@@ -113,7 +113,7 @@ class UserMapper
         }
 
 		// Username
-        $data['u_username'] = $user->getUsername ();
+        $data['u_username'] = $user->getDisplayName ();
 
 		$data['u_sub'] = $user->getSub ();
 
@@ -209,7 +209,7 @@ class UserMapper
         }
 
 		if ($data['u_username']) {
-            $user->setUsername($data['u_username']);
+            $user->setDisplayName($data['u_username']);
         }
 
 		if ($data['u_last_access_token']) {

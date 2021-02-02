@@ -16,171 +16,173 @@ class User implements \Neuron\Interfaces\Models\User
 {
     public $pingInterval = 3600; // every hour.
 
-	private $accessToken;
+    private $accessToken;
 
-	/** @var int $id */
-	private $id;
+    /** @var int $id */
+    private $id;
 
-	/** @var string $email */
-	private $email;
+    /** @var string $email */
+    private $email;
 
-	/** @var string $password */
-	private $password;
+    /** @var string $password */
+    private $password;
 
-	/** @var string $passwordhash */
-	private $passwordhash;
+    /** @var string $passwordhash */
+    private $passwordhash;
 
-	/** @var string $username */
-	private $username;
+    /** @var string $displayName */
+    private $displayName;
 
-	/** @var string $sub */
-	private $sub;
-
-    /**
-     * @var \DateTime
-     */
-	private $createdAt;
+    /** @var string $sub */
+    private $sub;
 
     /**
      * @var \DateTime
      */
-	private $updatedAt;
+    private $createdAt;
 
     /**
      * @var \DateTime
      */
-	private $lastPing;
+    private $updatedAt;
+
+    /**
+     * @var \DateTime
+     */
+    private $lastPing;
 
     /**
      * User constructor.
      */
-	public function __construct ()
-	{
+    public function __construct()
+    {
 
-	}
+    }
 
-	/**
-	 * Process input from openid provider.
-	 * @param $details
-	 */
-	public function mergeFromInput ($details) {
+    /**
+     * Process input from openid provider.
+     * @param $details
+     */
+    public function mergeFromInput($details)
+    {
 
-		if (isset ($details['username']))
-			$this->setUsername ($details['username']);
+        if (isset ($details['username']))
+            $this->setDisplayName($details['username']);
 
-	}
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getId ()
-	{
-		return $this->id;
-	}
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @param int $id
-	 */
-	public function setId ($id)
-	{
-		$this->id = $id;
-	}
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getEmail ()
-	{
-		return $this->email;
-	}
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
-	/**
-	 * @param string $email
-	 */
-	public function setEmail ($email)
-	{
-		$this->email = $email;
-	}
+    /**
+     * @param string $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getPassword ()
-	{
-		return $this->password;
-	}
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
 
-	/**
-	 * @param string $password
-	 */
-	public function setPassword ($password)
-	{
-		$this->password = $password;
-	}
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
 
-	/**
-	 * @param string $hash
-	 */
-	public function setPasswordHash ($hash)
-	{
-		$this->passwordhash = $hash;
-	}
+    /**
+     * @param string $hash
+     */
+    public function setPasswordHash($hash)
+    {
+        $this->passwordhash = $hash;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getPasswordHash ()
-	{
-		return $this->passwordhash;
-	}
+    /**
+     * @return string
+     */
+    public function getPasswordHash()
+    {
+        return $this->passwordhash;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUsername ()
-	{
-		return $this->username;
-	}
+    /**
+     * @param bool $formal
+     * @return string
+     */
+    public function getDisplayName($formal = false)
+    {
+        return $this->displayName;
+    }
 
-	/**
-	 * @param string $username
-	 */
-	public function setUsername ($username)
-	{
-		$this->username = $username;
-	}
+    /**
+     * @param string $displayName
+     */
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAccessToken ()
-	{
-		return $this->accessToken;
-	}
+    /**
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
 
-	/**
-	 * @param string $accessToken
-	 */
-	public function setAccessToken ($accessToken)
-	{
-		$this->accessToken = $accessToken;
-	}
+    /**
+     * @param string $accessToken
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getSub ()
-	{
-		return $this->sub;
-	}
+    /**
+     * @return string
+     */
+    public function getSub()
+    {
+        return $this->sub;
+    }
 
-	/**
-	 * @param string $sub
-	 */
-	public function setSub ($sub)
-	{
-		$this->sub = $sub;
-	}
+    /**
+     * @param string $sub
+     */
+    public function setSub($sub)
+    {
+        $this->sub = $sub;
+    }
 
     /**
      * @return \DateTime
@@ -236,7 +238,7 @@ class User implements \Neuron\Interfaces\Models\User
     public function anonymize()
     {
         $this->setEmail(null);
-        $this->setUsername(null);
+        $this->setDisplayName(null);
 
         \Neuron\MapperFactory::getUserMapper()->update($this);
     }
