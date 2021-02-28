@@ -10,26 +10,16 @@ use Neuron\Config;
 use Neuron\Exceptions\ExpectedType;
 use Neuron\Exceptions\InvalidParameter;
 use Neuron\MapperFactory;
+use Neuron\Net\QueryTrackingParameters;
 use Neuron\Net\Response;
 
 class LoginController
     extends BaseController
 {
-
     /**
-     * These parameters are passed on to the controller.
-     * @var string[]
+     * @return bool|Response
+     * @throws \Neuron\Exceptions\DataNotSet
      */
-    protected $trackingQueryParameters = [
-        'utm_abversion',
-        'utm_referrer',
-        'utm_source',
-        'utm_medium',
-        'utm_campaign',
-        'utm_term',
-        'utm_content'
-    ];
-
     public function login()
     {
         $cookieGate = $this->cookieGate('Login');
@@ -253,7 +243,7 @@ class LoginController
     protected function getTrackingParameterString()
     {
         $out = [];
-        foreach ($this->trackingQueryParameters as $v) {
+        foreach (QueryTrackingParameters::instance()->queryParameters as $v) {
             if ($this->request->input($v)) {
                 $out[$v] = $this->request->input($v);
             }
