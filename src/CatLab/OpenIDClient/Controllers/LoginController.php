@@ -51,6 +51,10 @@ class LoginController
                 $uri = $flow->getAuthorizationRequestUri($params);
                 $uri .= $this->getTrackingParameterString();
 
+                if ($this->request->input('intend')) {
+                    $uri .= '&' . http_build_query([ 'intend' => $this->request->input('intend') ]);
+                }
+
                 if ($this->module->isSendSessionIdAuthCallback()) {
                     $uri .= '&' . $this->request->getSession()->getSessionQueryString();
                 }
