@@ -15,7 +15,7 @@
 
   "require": {
 	"php": ">=5.5.0",
-	"catlabinteractive/neuron": "~2.0.16",
+	"catlabinteractive/neuron": ">=3.0.0",
 	"ivan-novakov/php-openid-connect-client": "0.2.1",
     "catlabinteractive/samesite-cookie-sniffer": "dev-master"
   },

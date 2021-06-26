@@ -72,12 +72,19 @@ class Module
 	 */
 	public function setRoutes (Router $router)
 	{
-		$router->match ('GET|POST', $this->routepath . '/login', '\CatLab\OpenIDClient\Controllers\LoginController@login');
-		$router->match ('GET|POST', $this->routepath . '/login/next', '\CatLab\OpenIDClient\Controllers\LoginController@next');
+		$router
+            ->match ('GET|POST', $this->routepath . '/login', '\CatLab\OpenIDClient\Controllers\LoginController@login')
+            ->filter('session');
 
-		$router->get ($this->routepath . '/logout', '\CatLab\OpenIDClient\Controllers\LoginController@logout');
+		$router
+            ->match ('GET|POST', $this->routepath . '/login/next', '\CatLab\OpenIDClient\Controllers\LoginController@next')
+            ->filter('session');
 
-		$router->get ($this->routepath . '/status', '\CatLab\OpenIDClient\Controllers\LoginController@status');
+		$router->get ($this->routepath . '/logout', '\CatLab\OpenIDClient\Controllers\LoginController@logout')
+            ->filter('session');
+
+		$router->get ($this->routepath . '/status', '\CatLab\OpenIDClient\Controllers\LoginController@status')
+            ->filter('session');
 	}
 
     /**
@@ -169,7 +176,13 @@ class Module
 	{
 		$request->addUserCallback ('accounts', function (Request $request) {
 
-			$userid = $request->getSession ()->get ('catlab-user-id');
+            try {
+                $session = $request->getSession();
+            } catch (DataNotSet $e) {
+                return null;
+            }
+
+			$userid = $session->get('catlab-user-id');
 
 			if ($userid)
 			{
