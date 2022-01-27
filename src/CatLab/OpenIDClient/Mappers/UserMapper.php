@@ -225,7 +225,7 @@ class UserMapper
         }
 
         if ($data['updated_at']) {
-            $user->setCreatedAt(new \DateTime($data['updated_at']));
+            $user->setUpdatedAt(new \DateTime($data['updated_at']));
         }
 
         if ($data['last_ping_at']) {
