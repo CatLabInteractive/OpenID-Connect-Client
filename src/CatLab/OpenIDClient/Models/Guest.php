@@ -17,7 +17,7 @@ class Guest
 		return null;
 	}
 
-	public function getDisplayName () {
+	public function getDisplayName ($formal = false) {
 		return 'Guest';
 	}
 

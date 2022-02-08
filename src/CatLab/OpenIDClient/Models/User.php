@@ -3,6 +3,7 @@
 namespace CatLab\OpenIDClient\Models;
 
 use CatLab\OpenIDClient\Mappers\UserMapper;
+use DateTime;
 use Neuron\Config;
 use Neuron\MapperFactory;
 use Neuron\Net\Client;
@@ -37,17 +38,17 @@ class User implements \Neuron\Interfaces\Models\User
     private $sub;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $updatedAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastPing;
 
@@ -185,7 +186,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
@@ -193,7 +194,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      */
     public function setCreatedAt($createdAt)
     {
@@ -201,7 +202,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt()
     {
@@ -209,7 +210,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -217,7 +218,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastPing()
     {
@@ -225,7 +226,7 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
-     * @param \DateTime $lastPing
+     * @param DateTime $lastPing
      */
     public function setLastPing($lastPing)
     {
@@ -253,7 +254,7 @@ class User implements \Neuron\Interfaces\Models\User
             $this->getLastPing() === null ||
             $this->getLastPing()->getTimestamp() < (time() - $this->pingInterval)
         ) {
-            $this->setLastPing(new \DateTime());
+            $this->setLastPing(new DateTime());
 
             /** @var UserMapper $mapper */
             $mapper = MapperFactory::getUserMapper();
@@ -284,6 +285,38 @@ class User implements \Neuron\Interfaces\Models\User
         $req->setParameters(array(
             'access_token' => $this->getAccessToken()
         ));
+
+        $response = Client::getInstance()->post($req);
+        $data = $response->getData();
+    }
+
+    /**
+     * @param $activity
+     * @param DateTime|null $date
+     * @return void
+     */
+    public function activity($activity, DateTime $date = null)
+    {
+        $activityEndpoint = Config::get('openid.client.activity_endpoint');
+        if (!$activityEndpoint) {
+            return null;
+        }
+
+        $req = new Request ();
+        $req->setUrl($activityEndpoint);
+        $req->setParameters(array(
+            'access_token' => $this->getAccessToken()
+        ));
+
+        $body = [
+            'activity' => $activity
+        ];
+
+        if (isset($date)) {
+            $body['date'] = $date->format('c');
+        }
+
+        $req->setBody($body);
 
         $response = Client::getInstance()->post($req);
         $data = $response->getData();
