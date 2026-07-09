@@ -43,7 +43,7 @@ abstract class BaseController
 	 * @param Request $request
 	 * @return void
 	 */
-	public function setRequest (Request $request = null)
+	public function setRequest (?Request $request = null)
 	{
 		$this->request = $request;
 	}

@@ -295,7 +295,7 @@ class User implements \Neuron\Interfaces\Models\User
      * @param DateTime|null $date
      * @return void
      */
-    public function activity($activity, DateTime $date = null)
+    public function activity($activity, ?DateTime $date = null)
     {
         $activityEndpoint = Config::get('openid.client.activity_endpoint');
         if (!$activityEndpoint) {
