@@ -4,7 +4,7 @@ namespace CatLab\OpenIDClient\Controllers;
 
 use CatLab\OpenIDClient\Mappers\UserMapper;
 use CatLab\OpenIDClient\Models\User;
-use InoOicClient\Flow\Basic;
+use CatLab\OpenIDClient\BasicFlow;
 use Neuron\Application;
 use Neuron\Config;
 use Neuron\Exceptions\ExpectedType;
@@ -42,7 +42,7 @@ class LoginController
             return $this->module->postLogin($this->request, $user);
 
         $config = Config::get('openid.client');
-        $flow = new Basic (array('client_info' => $config));
+        $flow = new BasicFlow($config);
 
         $params = Config::get('openid.client.scope');
 
@@ -87,7 +87,7 @@ class LoginController
     public function next()
     {
         $config = Config::get('openid.client');
-        $flow = new Basic (array('client_info' => $config));
+        $flow = new BasicFlow($config);
 
         try {
             //$userInfo = $flow->process();
@@ -106,9 +106,6 @@ class LoginController
 
     public function logout()
     {
-        $config = Config::get('openid.client');
-        $flow = new Basic (array('client_info' => $config));
-
         session_destroy();
 
         /*
