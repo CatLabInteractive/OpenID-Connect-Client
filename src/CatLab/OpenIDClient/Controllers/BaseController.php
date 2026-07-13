@@ -28,7 +28,7 @@ abstract class BaseController
 	 * @param \Neuron\Interfaces\Module $module
 	 * @throws InvalidParameter
 	 */
-	public function __construct (\Neuron\Interfaces\Module $module = null)
+	public function __construct (?\Neuron\Interfaces\Module $module = null)
 	{
 		if (! ($module instanceof Module))
 		{
