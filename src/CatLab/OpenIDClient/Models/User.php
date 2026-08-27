@@ -267,6 +267,24 @@ class User implements \Neuron\Interfaces\Models\User
     }
 
     /**
+     * A request to the accounts server on behalf of this user. The access
+     * token travels in the Authorization header only -- never in the query
+     * string, where it would end up in access logs (accounts.catlab.eu
+     * security audit 2026-08-27, A11).
+     * @param string $url
+     * @return Request
+     */
+    public function createAuthenticatedRequest($url)
+    {
+        $req = new Request ();
+        $req->setUrl($url);
+        $req->setHeaders(array(
+            'Authorization' => 'Bearer ' . $this->getAccessToken()
+        ));
+        return $req;
+    }
+
+    /**
      * @return void
      */
     public function ping()
@@ -280,19 +298,19 @@ class User implements \Neuron\Interfaces\Models\User
             return null;
         }
 
-        $req = new Request ();
-        $req->setUrl($pingEndpoint);
-        $req->setParameters(array(
-            'access_token' => $this->getAccessToken()
-        ));
+        $req = $this->createAuthenticatedRequest($pingEndpoint);
 
         $response = Client::getInstance()->post($req);
         $data = $response->getData();
     }
 
     /**
-     * @param $activity
-     * @param DateTime|null $date
+     * Record a product activity for this user (accounts whitelists the
+     * labels: played-quiz, hosted-quiz).
+     * @param string $activity
+     * @param DateTime|null $date Ignored by the server since audit A18 (the
+     *   activity is stamped with server time); kept for signature
+     *   compatibility.
      * @return void
      */
     public function activity($activity, ?DateTime $date = null)
@@ -302,21 +320,10 @@ class User implements \Neuron\Interfaces\Models\User
             return null;
         }
 
-        $req = new Request ();
-        $req->setUrl($activityEndpoint);
-        $req->setParameters(array(
-            'access_token' => $this->getAccessToken()
-        ));
-
-        $body = [
+        $req = $this->createAuthenticatedRequest($activityEndpoint);
+        $req->setBody([
             'activity' => $activity
-        ];
-
-        if (isset($date)) {
-            $body['date'] = $date->format('c');
-        }
-
-        $req->setBody($body);
+        ]);
 
         $response = Client::getInstance()->post($req);
         $data = $response->getData();
