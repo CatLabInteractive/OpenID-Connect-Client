@@ -142,7 +142,7 @@ class LoginController
         }
 
         $input = $_GET;
-        $cookiegate = isset($input['cookiegate']) ? $input['cookiegate'] : 0;
+        $cookiegate = $this->getCookieGateStep($input);
 
         $input['cookiegate'] = $cookiegate + 1;
         $redirectUrl = $this->request->getUrl() . '?' . http_build_query($input);
@@ -187,6 +187,21 @@ class LoginController
                     ]
                 );
         }
+    }
+
+    /**
+     * Number of cookie-gate hops taken so far, read from the untrusted query
+     * string. Anything that is not a plain integer counts as the first hop.
+     * @param array $input
+     * @return int
+     */
+    protected function getCookieGateStep(array $input)
+    {
+        if (!isset($input['cookiegate']) || is_array($input['cookiegate'])) {
+            return 0;
+        }
+
+        return intval($input['cookiegate']);
     }
 
     private function processLogin($accessToken, $userdetails)
