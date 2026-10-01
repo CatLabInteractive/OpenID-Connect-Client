@@ -17,7 +17,7 @@
 	"php": ">=8.1",
 	"catlabinteractive/neuron": ">=3.0.0",
 	"guzzlehttp/guzzle": "^6.3|^7.0",
-    "catlabinteractive/samesite-cookie-sniffer": "dev-master"
+    "catlabinteractive/samesite-cookie-sniffer": "^1.0"
   },
 
   "require-dev": {
