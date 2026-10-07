@@ -112,12 +112,46 @@ class Module
      */
 	public function login (Request $request, User $user)
 	{
+		// A logged in session gets a new id. The session data (such as
+		// the post-login redirect) is kept.
+		$this->regenerateSessionId ($request);
+
 		$request->getSession ()->set ('catlab-user-id', $user->getId ());
 		$request->getSession ()->set ('catlab-openid-access-token', $user->getAccessToken ());
 
 		$this->trigger ('user:login', $user);
 
 		return $this->postLogin ($request, $user);
+	}
+
+	/**
+	 * Give the active session a new id, keeping its data.
+	 * Uses Session::regenerate () where Neuron has it; older Neuron
+	 * versions get the same through PHP directly.
+	 * @param Request $request
+	 * @throws DataNotSet
+	 */
+	private function regenerateSessionId (Request $request)
+	{
+		$session = $request->getSession ();
+
+		if (method_exists ($session, 'regenerate'))
+		{
+			$session->regenerate ();
+			return;
+		}
+
+		if (session_status () !== PHP_SESSION_ACTIVE)
+		{
+			return;
+		}
+
+		if (headers_sent () && ini_get ('session.use_cookies'))
+		{
+			return;
+		}
+
+		session_regenerate_id (true);
 	}
 
 	/**
